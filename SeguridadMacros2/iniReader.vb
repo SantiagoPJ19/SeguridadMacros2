@@ -299,20 +299,15 @@ Public Class ConectaDB
 
     ''' <summary>
     ''' Lee de Config.ini los datos para iniciar sesión en Sage 300: UserAcc (usuario), PassAcc (contraseña
-    ''' encriptada, igual que Pass) y CompanyAcc (ID de la compañía). Devuelve False si falta alguno.
+    ''' encriptada, igual que Pass). La compañía no va en el .ini: sale de la sesión identificada en Sage.
+    ''' Devuelve False si falta alguno.
     ''' </summary>
-    Public Shared Function LeerCredencialesSage(ByRef usuario As String, ByRef clave As String, ByRef empresa As String) As Boolean
+    Public Shared Function LeerCredencialesSage(ByRef usuario As String, ByRef clave As String) As Boolean
         Dim sINIFile As String = My.Application.Info.DirectoryPath & "\" & "Config.ini"
 
         usuario = IniManager.LeerValor("settings", "UserAcc", sINIFile, "?")
         If usuario = "?" OrElse usuario.Trim().Length = 0 Then
             MsgBox("Falta el parámetro UserAcc en Config.ini, favor de llamar al Administrador del sistema", vbOKOnly + vbCritical, "Archivo INI - UserAcc")
-            Return False
-        End If
-
-        empresa = IniManager.LeerValor("settings", "CompanyAcc", sINIFile, "?")
-        If empresa = "?" OrElse empresa.Trim().Length = 0 Then
-            MsgBox("Falta el parámetro CompanyAcc en Config.ini, favor de llamar al Administrador del sistema", vbOKOnly + vbCritical, "Archivo INI - CompanyAcc")
             Return False
         End If
 
@@ -330,7 +325,6 @@ Public Class ConectaDB
         End Try
 
         usuario = usuario.Trim()
-        empresa = empresa.Trim()
         Return True
     End Function
 

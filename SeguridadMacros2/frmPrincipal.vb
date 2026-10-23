@@ -43,30 +43,44 @@ Public Class frmPrincipal
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        'SESIÓN SAGE 300: inicia sesión con UserAcc / PassAcc / CompanyAcc de Config.ini. Si no se puede abrir
-        '(credenciales faltantes o incorrectas, versión incorrecta...) no hay con qué operar
+        'SESIÓN SAGE 300: la compañía sale de la sesión identificada en Sage al iniciar la app (GetSignonInfo) y la
+        'sesión de trabajo se abre en esa compañía con UserAcc / PassAcc de Config.ini. Si no se puede abrir
+        '(sin sesión en Sage, credenciales faltantes o incorrectas, versión incorrecta...) no hay con qué operar
         Dim usuarioAcc As String = Nothing
         Dim claveAcc As String = Nothing
-        Dim empresaAcc As String = Nothing
-        If Not ConectaDB.LeerCredencialesSage(usuarioAcc, claveAcc, empresaAcc) Then
+        If Not ConectaDB.LeerCredencialesSage(usuarioAcc, claveAcc) Then
             CerrarPorError("No se pudieron leer las credenciales de Sage 300 de Config.ini.", "Error de configuración")
             Return
         End If
 
+        Dim sesionSignon As AccpacSession = Nothing
         Try
-            mSession = New AccpacSession()
-            mSession.Init("", "AS", "AS1000", "73A") ' ObjectHandle, AppID, ProgramName, AppVersion
-            mSession.Open(usuarioAcc, claveAcc, empresaAcc, Date.Today, 0, "")
-            claveAcc = Nothing
+            ' 1) Sesión identificada en Sage: solo se usa para saber usuario y compañía.
+            Dim sessMgr As New AccpacSessionMgr()
+            Dim lSignonID As Long = 0 ' MUST be initialized to 0 since you don't have a signon ID yet
+            sessMgr.AppID = "AS"
+            sessMgr.AppVersion = "73A"
+            sessMgr.ProgramName = "AS1000"
+            sessMgr.ServerName = "" ' empty string if running on local computer
+            sessMgr.CreateSession("", lSignonID, sesionSignon) ' first argument is the object handle (if you don't have one, pass "")
 
-            If Not mSession.IsOpened Then
-                CerrarPorError("No se pudo abrir la sesión de Sage 300. Verifique UserAcc, PassAcc y CompanyAcc en Config.ini.", "Error de sesión")
+            If sesionSignon Is Nothing Then
+                CerrarPorError("No hay una sesión identificada en Sage 300. Inicie sesión en Sage y vuelva a abrir la aplicación.", "Error de sesión")
                 Return
             End If
 
-            sUsuario = mSession.UserID
-            sEmpresa = mSession.CompanyID
-            sEmpresaNombre = mSession.CompanyName
+            Call sesionSignon.GetSignonInfo(sUsuario, sEmpresa, sEmpresaNombre)
+
+            ' 2) Sesión de trabajo: UserAcc / PassAcc en la compañía identificada.
+            mSession = New AccpacSession()
+            mSession.Init("", "AS", "AS1000", "73A") ' ObjectHandle, AppID, ProgramName, AppVersion
+            mSession.Open(usuarioAcc, claveAcc, sEmpresa, Date.Today, 0, "")
+            claveAcc = Nothing
+
+            If Not mSession.IsOpened Then
+                CerrarPorError("No se pudo abrir la sesión de Sage 300. Verifique UserAcc y PassAcc en Config.ini.", "Error de sesión")
+                Return
+            End If
 
             'COMPANY COLOR
             Dim companyColorCode As Integer = mSession.GetCompanyColorCode(sEmpresa)
@@ -76,8 +90,10 @@ Public Class frmPrincipal
             AplicaBorde(netColor)
             'COMPANY COLOR
         Catch ex As Exception
-            CerrarPorError("No fue posible iniciar la sesión de Sage 300:" & Environment.NewLine & DetalleErroresSage(ex), "Error de sesión")
+            CerrarPorError("No fue posible iniciar la sesión de Sage 300:" & Environment.NewLine & DetalleErroresSage(ex, If(mSession, sesionSignon)), "Error de sesión")
             Return
+        Finally
+            If sesionSignon IsNot Nothing Then System.Runtime.InteropServices.Marshal.ReleaseComObject(sesionSignon)
         End Try
 
         'RESIZE
@@ -123,14 +139,14 @@ Public Class frmPrincipal
     End Sub
 
     ''' <summary>Mensaje de la excepción más los errores que Sage 300 haya dejado en la sesión.</summary>
-    Private Function DetalleErroresSage(ex As Exception) As String
+    Private Function DetalleErroresSage(ex As Exception, sesion As AccpacSession) As String
         Dim detalle As New System.Text.StringBuilder(ex.Message)
         Try
-            If mSession IsNot Nothing AndAlso mSession.Errors IsNot Nothing Then
-                For i As Integer = 0 To mSession.Errors.Count - 1
-                    detalle.AppendLine().Append(mSession.Errors.Item(i))
+            If sesion IsNot Nothing AndAlso sesion.Errors IsNot Nothing Then
+                For i As Integer = 0 To sesion.Errors.Count - 1
+                    detalle.AppendLine().Append(sesion.Errors.Item(i))
                 Next
-                mSession.Errors.Clear()
+                sesion.Errors.Clear()
             End If
         Catch
             ' si la sesión está dañada nos quedamos con el mensaje de la excepción
