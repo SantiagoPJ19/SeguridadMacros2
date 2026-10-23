@@ -53,7 +53,9 @@ Partial Class frmPrivilegios
         '
         'cmbUsuarios
         '
-        Me.cmbUsuarios.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbUsuarios.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend
+        Me.cmbUsuarios.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
+        Me.cmbUsuarios.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown
         Me.cmbUsuarios.FormattingEnabled = True
         Me.cmbUsuarios.Location = New System.Drawing.Point(140, 20)
         Me.cmbUsuarios.Name = "cmbUsuarios"
@@ -129,7 +131,9 @@ Partial Class frmPrivilegios
         '
         'cmbModulos
         '
-        Me.cmbModulos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbModulos.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend
+        Me.cmbModulos.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
+        Me.cmbModulos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown
         Me.cmbModulos.FormattingEnabled = True
         Me.cmbModulos.Location = New System.Drawing.Point(140, 200)
         Me.cmbModulos.Name = "cmbModulos"
@@ -153,7 +157,9 @@ Partial Class frmPrivilegios
         '
         'cmbPantallas
         '
-        Me.cmbPantallas.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbPantallas.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend
+        Me.cmbPantallas.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
+        Me.cmbPantallas.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown
         Me.cmbPantallas.FormattingEnabled = True
         Me.cmbPantallas.Location = New System.Drawing.Point(140, 236)
         Me.cmbPantallas.Name = "cmbPantallas"
@@ -177,7 +183,9 @@ Partial Class frmPrivilegios
         '
         'cmbAplica
         '
-        Me.cmbAplica.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbAplica.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend
+        Me.cmbAplica.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
+        Me.cmbAplica.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown
         Me.cmbAplica.FormattingEnabled = True
         Me.cmbAplica.Items.AddRange(New Object() {"Sí", "No"})
         Me.cmbAplica.Location = New System.Drawing.Point(140, 272)

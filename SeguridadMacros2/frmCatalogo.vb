@@ -44,6 +44,7 @@ Public Class frmCatalogo
 
     Private Sub frmCatalogo_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AplicaBordeEmpresa(Me)
+        HabilitaBusqueda(cmbClave, Sub() txtDescripcion.Clear())
         lblClave.Text = NombreCap
         Dim sufijo As String = If(Fem, "Pantallas", "Módulos")
 

@@ -12,8 +12,17 @@ Public Class frmUsuarios
         _modo = modo
     End Sub
 
+    ' Sin usuario seleccionado se limpian los datos mostrados (en Alta los captura la persona, no se tocan).
+    Private Sub LimpiaDetalle()
+        If _modo = ModoCrud.Alta Then Return
+        For Each txt As TextBox In {txtNombre, txtApellido, txtSucursal, txtPuesto, txtFuncion}
+            txt.Clear()
+        Next
+    End Sub
+
     Private Sub frmUsuarios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AplicaBordeEmpresa(Me)
+        HabilitaBusqueda(cmbUsuarios, AddressOf LimpiaDetalle)
         Try
             Select Case _modo
                 Case ModoCrud.Alta

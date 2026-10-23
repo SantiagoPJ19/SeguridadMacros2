@@ -10,8 +10,34 @@ Public Class frmPrivilegios
         _modo = modo
     End Sub
 
+    ' Limpieza de lo que depende de cada combo cuando se queda sin selección (vacío o valor inexistente).
+    Private Sub LimpiaUsuario()
+        For Each txt As TextBox In {txtNombre, txtApellido, txtSucursal, txtPuesto}
+            txt.Clear()
+        Next
+        Evalua()
+    End Sub
+
+    Private Sub LimpiaModulo()
+        txtModulo.Clear()
+        cmbPantallas.Items.Clear()
+        cmbPantallas.SelectedIndex = -1
+        cmbPantallas.Text = ""
+        txtPantalla.Clear()
+        Evalua()
+    End Sub
+
+    Private Sub LimpiaPantalla()
+        txtPantalla.Clear()
+        Evalua()
+    End Sub
+
     Private Sub frmPrivilegios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AplicaBordeEmpresa(Me)
+        HabilitaBusqueda(cmbUsuarios, AddressOf LimpiaUsuario)
+        HabilitaBusqueda(cmbModulos, AddressOf LimpiaModulo)
+        HabilitaBusqueda(cmbPantallas, AddressOf LimpiaPantalla)
+        HabilitaBusqueda(cmbAplica)
         Select Case _modo
             Case ModoCrud.Alta
                 Text = "Alta de Privilegios"
@@ -64,6 +90,7 @@ Public Class frmPrivilegios
             ' Las pantallas dependen del módulo: se recargan y la selección anterior ya no es válida.
             cmbPantallas.Items.Clear()
             cmbPantallas.SelectedIndex = -1
+            cmbPantallas.Text = ""
             txtPantalla.Clear()
             For Each p As String In PantallasDeModulo(cmbModulos.Text.Trim())
                 cmbPantallas.Items.Add(p)
@@ -90,7 +117,14 @@ Public Class frmPrivilegios
     ''' </summary>
     Private Sub Evalua()
         btnAceptar.Enabled = False
-        If cmbUsuarios.SelectedItem Is Nothing OrElse cmbModulos.SelectedItem Is Nothing OrElse cmbPantallas.SelectedItem Is Nothing Then Return
+        If cmbUsuarios.SelectedItem Is Nothing OrElse cmbModulos.SelectedItem Is Nothing OrElse cmbPantallas.SelectedItem Is Nothing Then
+            ' Selección incompleta: el "Aplica" mostrado era del privilegio anterior (en Alta lo elige la persona).
+            If _modo <> ModoCrud.Alta Then
+                cmbAplica.SelectedIndex = -1
+                cmbAplica.Text = ""
+            End If
+            Return
+        End If
 
         Try
             Dim aplica As Integer? = PrivilegioObtener(cmbUsuarios.Text.Trim(), cmbModulos.Text.Trim(), cmbPantallas.Text.Trim())
@@ -105,6 +139,7 @@ Public Class frmPrivilegios
                 If Not aplica.HasValue Then
                     MessageBox.Show("El usuario no tiene asignado este privilegio... corrija por favor", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     cmbAplica.SelectedIndex = -1
+                    cmbAplica.Text = ""
                     Return
                 End If
                 ' Muestra el valor actual (el VB6 lo dejaba en blanco).

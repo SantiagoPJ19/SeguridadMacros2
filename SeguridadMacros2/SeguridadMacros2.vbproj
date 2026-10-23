@@ -83,6 +83,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Bordes.vb" />
+    <Compile Include="Combos.vb" />
     <Compile Include="Datos.vb" />
     <Compile Include="frmCatalogo.Designer.vb">
       <DependentUpon>frmCatalogo.vb</DependentUpon>

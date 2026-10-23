@@ -40,7 +40,9 @@ Partial Class frmCatalogo
         '
         'cmbClave
         '
-        Me.cmbClave.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbClave.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend
+        Me.cmbClave.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
+        Me.cmbClave.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown
         Me.cmbClave.FormattingEnabled = True
         Me.cmbClave.Location = New System.Drawing.Point(120, 20)
         Me.cmbClave.Name = "cmbClave"

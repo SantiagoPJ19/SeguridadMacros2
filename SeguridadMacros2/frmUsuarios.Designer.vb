@@ -47,7 +47,9 @@ Partial Class frmUsuarios
         '
         'cmbUsuarios
         '
-        Me.cmbUsuarios.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbUsuarios.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend
+        Me.cmbUsuarios.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
+        Me.cmbUsuarios.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown
         Me.cmbUsuarios.FormattingEnabled = True
         Me.cmbUsuarios.Location = New System.Drawing.Point(140, 20)
         Me.cmbUsuarios.Name = "cmbUsuarios"
